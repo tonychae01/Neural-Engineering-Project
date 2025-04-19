@@ -1,8 +1,24 @@
 # Neural-Engineering-Project
 
+
 ## Analysis of Peripheral Nerve Signals
 
-<!-- Result_Figures_1: Figures (1).jpg – Figures (13).jpg -->
+<!-- Result_Figures_1: Figures (1).JPG – Figures (9).JPG -->
+![Nerve Fig 1](Result_Figures_2/Figures%20(1).JPG)  
+![Nerve Fig 2](Result_Figures_2/Figures%20(2).JPG)  
+![Nerve Fig 3](Result_Figures_2/Figures%20(3).JPG)  
+![Nerve Fig 4](Result_Figures_2/Figures%20(4).JPG)  
+![Nerve Fig 5](Result_Figures_2/Figures%20(5).JPG)  
+![Nerve Fig 6](Result_Figures_2/Figures%20(6).JPG)  
+![Nerve Fig 7](Result_Figures_2/Figures%20(7).JPG)  
+![Nerve Fig 8](Result_Figures_2/Figures%20(8).JPG)  
+![Nerve Fig 9](Result_Figures_2/Figures%20(9).JPG)  
+
+---
+
+## Analysis of Electromyography (EMG) Signals
+
+<!-- Result_Figures_2: Figures (1).jpg – Figures (13).jpg -->
 ![EMG Fig 1](Result_Figures_1/Figures%20(1).jpg)  
 ![EMG Fig 2](Result_Figures_1/Figures%20(2).jpg)  
 ![EMG Fig 3](Result_Figures_1/Figures%20(3).jpg)  
@@ -17,20 +33,6 @@
 ![EMG Fig 12](Result_Figures_1/Figures%20(12).jpg)  
 ![EMG Fig 13](Result_Figures_1/Figures%20(13).jpg)  
 
----
-
-## Analysis of Electromyography (EMG) Signals
-
-<!-- Result_Figures_2: Figures (1).JPG – Figures (9).JPG -->
-![Nerve Fig 1](Result_Figures_2/Figures%20(1).JPG)  
-![Nerve Fig 2](Result_Figures_2/Figures%20(2).JPG)  
-![Nerve Fig 3](Result_Figures_2/Figures%20(3).JPG)  
-![Nerve Fig 4](Result_Figures_2/Figures%20(4).JPG)  
-![Nerve Fig 5](Result_Figures_2/Figures%20(5).JPG)  
-![Nerve Fig 6](Result_Figures_2/Figures%20(6).JPG)  
-![Nerve Fig 7](Result_Figures_2/Figures%20(7).JPG)  
-![Nerve Fig 8](Result_Figures_2/Figures%20(8).JPG)  
-![Nerve Fig 9](Result_Figures_2/Figures%20(9).JPG)  
 
 ---
 
