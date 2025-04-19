@@ -38,7 +38,7 @@
 
 ## Longitudinal EEG‑MI Training and Plasticity Analysis
 
-<!-- Result_Figures_3: Figures (1).png – Figures (21).png -->
+<!-- Result_Figures_2: Figures (1).png – Figures (21).png -->
 ![EEG‑MI Fig 1](Result_Figures_3/Figures%20(1).png)  
 ![EEG‑MI Fig 2](Result_Figures_3/Figures%20(2).png)  
 ![EEG‑MI Fig 3](Result_Figures_3/Figures%20(3).png)  
