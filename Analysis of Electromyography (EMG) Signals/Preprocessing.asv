@@ -1,0 +1,165 @@
+clear all
+close all
+clc
+
+%% Import Data
+load('../subject1.mat');
+
+signal=subject.run(1).emg; %N datapoints * 4channel
+header=subject.run(1).header; %N
+fs=header.fs;
+labels=header.Label;
+typ=header.EVENT.TYP; %hyp 32766-->loop(1000,768,...)-->32766
+pos=header.EVENT.POS; %position of each typ
+
+%% Extract the first trial of subject 1 data.
+%% 1. Plot time series signal over time with triggers
+%% Extract Trial 1 Data
+trial_start_idx = find(typ == 1000, 1); % First occurrence of trial start
+fix_idx = find(typ == 768, 1); % First occurrence of fixation
+task_cue_idx = find(typ == 100 | typ == 200 | typ == 300, 1); % Task cue
+task_start_idx = find(typ == 101 | typ == 201 | typ == 301, 1); % Task execution start
+task_end_idx = find(typ == 102 | typ == 202 | typ == 302, 1); % Task execution end
+
+%% Extract time windows
+rest_start = pos(trial_start_idx); % Start of rest period
+fix_start = pos(fix_idx); % Start of fixation
+task_cue = pos(task_cue_idx); % Start of task
+task_start = pos(task_start_idx); % Start of task
+task_end = pos(task_end_idx); % End of task
+
+%% Extract EMG signals from trial
+time_vector = (1:length(signal)) / fs; % Convert samples to seconds
+trial_time = time_vector(rest_start:task_end); %start~end all data of first trial
+trial_signal = signal(rest_start:task_end, :); 
+% 
+% Plot EMG Signals with Trigger Locations
+% figure;
+% hold on;
+% Number of EMG channels
+% num_channels = size(trial_signal, 2); 
+% colors = lines(num_channels); % Assign unique colors for each EMG channel
+% Plot each EMG channel with labels
+% for ch = 1:num_channels
+%     plot(trial_time, trial_signal(:, ch), 'Color', colors(ch, :), 'LineWidth', 1.5);
+% end
+% Label the EMG channels on the y-axis
+% yticks(linspace(min(ylim), max(ylim), num_channels)); % Auto-spacing
+% yticklabels(labels);
+% ylabel('EMG Channels');
+% Define trigger positions and labels
+% trigger_times = time_vector([rest_start, fix_start, task_cue, task_start, task_end]);
+% trigger_labels = {'Rest Start', 'Fixation', 'Task Cue', 'Task Start', 'Task End'};
+% trigger_colors = {'g', 'b', 'm', 'r', 'k'}; % Unique colors for triggers
+% Overlay vertical stems for triggers with text labels
+% for i = 1:length(trigger_times)
+%     stem([trigger_times(i) trigger_times(i)], [min(trial_signal(:)) max(trial_signal(:))], 'Color', trigger_colors{i}, 'LineStyle', '--', 'Marker', 'none', 'LineWidth', 1);
+%     text(trigger_times(i), max(trial_signal(:)) + 0.2, trigger_labels{i}, 'Color', trigger_colors{i}, 'FontSize', 10, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+% end
+% xlabel('Time (s)');
+% title('EMG Time Series with Trigger Events');
+% hold off;
+% hold off;
+% Define sensor names and colors
+sensor_labels = labels;
+sensor_colors = {'r', 'g', 'b', 'k'};  % Assign unique colors for each sensor
+
+figure;
+hold on;
+
+% Loop through each EMG sensor (4 subplots)
+for ch = 1:4
+    subplot(4,1,ch);  % Create 4 subplots (one per EMG sensor)
+    hold on;
+    
+    % Plot the EMG signal for the current sensor
+    plot(trial_time, trial_signal(:, ch), 'Color', sensor_colors{ch}, 'LineWidth', 1.5);
+    
+    % Define trigger positions and labels
+    trigger_times = time_vector([rest_start, fix_start, task_cue, task_start, task_end]);
+    trigger_labels = {'Rest Start', 'Fixation', 'Task Cue', 'Task Start', 'Task End'};
+    trigger_colors = {'g', 'b', 'm', 'r', 'k'}; % Unique colors for triggers
+
+    % Overlay vertical stems for triggers with text labels
+    for i = 1:length(trigger_times)
+        stem([trigger_times(i) trigger_times(i)], ...
+            [min(trial_signal(:, ch)) max(trial_signal(:, ch))], ...
+            'Color', trigger_colors{i}, 'LineStyle', '--', 'Marker', 'none', 'LineWidth', 1);
+        
+        text(trigger_times(i), max(trial_signal(:, ch)) * 0.9, trigger_labels{i}, ...
+            'Color', trigger_colors{i}, 'FontSize', 8, 'FontWeight', 'bold', 'HorizontalAlignment', 'center');
+    end
+
+    % Y-axis label for each subplot
+    ylabel([sensor_labels{ch} ' Amp(uV)']);
+    
+    % Title for each sensor
+    title(['EMG Signal (subject 1, run 1, trial 1) - ' sensor_labels{ch}]);
+
+    % X-axis label only for the last subplot
+    if ch == 4
+        xlabel('Time (s)');
+    else
+        xticklabels([]); % Hide x-axis labels for upper plots
+    end
+
+    hold off;
+end
+
+hold off;
+
+
+
+%% 2. Extract rest and Task period distal Flexor muscle 
+distal_flexor_idx=find(strcmp(labels, 'FlxDist')); % 4번째 idx
+rest_signal=signal(rest_start:fix_start,distal_flexor_idx);
+task_signal=signal(task_start:task_end,distal_flexor_idx);
+
+%% Compute and Plot PSD for Rest vs. Task
+[pxx_rest, f_rest] = pwelch(rest_signal, fs, [], [], fs);
+[pxx_task, f_task] = pwelch(task_signal, fs, [], [], fs);
+
+figure;
+semilogy(f_rest, pxx_rest, 'b', 'LineWidth', 1.5); hold on;
+semilogy(f_task, pxx_task, 'r', 'LineWidth', 1.5);
+xlabel('Frequency (Hz)');
+ylabel('Power Spectral Density (dB/Hz)');
+title('PSD Comparison of Rest vs. Task');
+legend('Rest Period', 'Task Period');
+hold off;
+
+%% Bandpass Filtering for EMG (20-450 Hz)
+[b, a] = butter(4, [20 450] / (fs / 2), 'bandpass');
+filtered_signal = filtfilt(b, a, signal);
+
+
+% %% Extract and Store Task Periods for All Trials
+% all_trials = {};
+% all_labels = [];
+% for i = 1:length(pos)
+%     if typ(i) == 1000 % Trial start
+%         % Get trial indices
+%         trial_start_idx = pos(i);
+%         task_start_idx = pos(find(typ == 101 | typ == 201 | typ == 301, 1, 'first'));
+%         task_end_idx = pos(find(typ == 102 | typ == 202 | typ == 302, 1, 'first'));
+% 
+%         if ~isempty(task_start_idx) && ~isempty(task_end_idx)
+%             task_signal = filtered_signal(task_start_idx:task_end_idx, :);
+%             all_trials{end+1} = task_signal;
+% 
+%             % Determine class based on task cue
+%             cue_idx = find(typ == 100 | typ == 200 | typ == 300, 1, 'first');
+%             if ~isempty(cue_idx)
+%                 all_labels(end+1) = typ(cue_idx);
+%             end
+%         end
+%     end
+% end
+% 
+% % Convert cell array to matrix
+% task_data_matrix = cat(3, all_trials{:});
+% task_labels = all_labels';
+% 
+% %% Save Processed Data
+% save('processed_EMG_data.mat', 'task_data_matrix', 'task_labels', 'fs', 'labels');
+% 
